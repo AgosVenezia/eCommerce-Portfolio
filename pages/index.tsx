@@ -30,6 +30,7 @@ export default function Home({ products }: Props) {
       </Head>
       <main>
         <Heading as="h3" size="sm">We got Chakra UI</Heading>
+        <Button>Button</Button>
         <ol>
         {products.map(product => {
           return <li key={product.id}>{product.title}</li>
