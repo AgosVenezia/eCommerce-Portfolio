@@ -1,7 +1,25 @@
 import Head from 'next/head'
-import { Heading } from '@chakra-ui/react'
+import { Heading, Button, Box } from '@chakra-ui/react'
+import { GetServerSideProps, GetServerSidePropsContext } from 'next';
 
-export default function Home() {
+type Product = {
+  id: number;
+  title: string;
+  price: number;
+  description: string;
+  category: string;
+  image: string;
+  rating: {
+    count: number;
+    rate: number;
+  }
+}
+
+type Props = {
+  products: Product[]
+}
+
+export default function Home({ products }: Props) {
   return (
     <>
       <Head>
@@ -11,8 +29,24 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main>
-        <Heading>We got Chakra UI</Heading>
+        <Heading as="h3" size="sm">We got Chakra UI</Heading>
+        <ol>
+        {products.map(product => {
+          return <li key={product.id}>{product.title}</li>
+        })}
+        </ol>
       </main>
     </>
   )
+}
+
+export async function getServerSideProps(context: GetServerSidePropsContext) {
+  const products = await fetch("https://fakestoreapi.com/products")
+    .then(res => res.json())
+
+  return {
+    props: {
+      products
+    }
+  }
 }

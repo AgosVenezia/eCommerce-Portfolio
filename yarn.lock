@@ -986,6 +986,11 @@
     minimatch "^3.1.2"
     strip-json-comments "^3.1.1"
 
+"@fontsource/spartan@^4.5.8":
+  version "4.5.8"
+  resolved "https://registry.yarnpkg.com/@fontsource/spartan/-/spartan-4.5.8.tgz#376f6552690ca59998d2926a762f74e6e6324049"
+  integrity sha512-g2zQ/Jh43stU3xDCZsJA10IXfmN5EKzvuhTf8OxAiYZIxGr/tFey5pC/TGrd57mdz32A1vDeEe+FTXWSIY1uXQ==
+
 "@humanwhocodes/config-array@^0.11.8":
   version "0.11.8"
   resolved "https://registry.yarnpkg.com/@humanwhocodes/config-array/-/config-array-0.11.8.tgz#03595ac2075a4dc0f191cc2131de14fbd7d410b9"
