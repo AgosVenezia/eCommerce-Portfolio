@@ -1,13 +1,23 @@
-import { GetServerSidePropsContext } from "next";
-import Head from "next/head"
-import Image from "next/image"
+import { GetServerSidePropsContext } from 'next';
+import Head from 'next/head';
 
-import { Grid, GridItem } from "@chakra-ui/react"
-import { Header } from "@/components/Header";
-import { TopBar } from "@/components/TopBar";
-import { slugify } from "@/utils/sluglify";
+import { Header } from '@/components/Header';
+import { TopBar } from '@/components/TopBar';
 
-type Product = {
+import { HomeHeroCategories } from '@/components/HomeHeroCategories';
+import { Categories } from '@/models/Categories';
+
+import { Box, Button, Container, FormControl, Grid, Heading, Input, SimpleGrid, Text } from '@chakra-ui/react';
+import { AdvantageSection } from '@/components/AdvantageSection';
+import { GroupedProducts, groupProductsByCategory } from '@/utils/groupProductsByCategory';
+import { HomeProductsGrid } from '@/components/HomeProductsGrid';
+
+import bannerNewSeason from '/public/banner-new-season.jpg';
+import bannerSale from '/public/banner-sale.jpg';
+import { CenteredLabel } from '@/components/CenteredLabel';
+import { PromoBanner } from '@/components/PromoBanner';
+
+export type Product = {
   id: number;
   title: string;
   price: number;
@@ -18,18 +28,15 @@ type Product = {
     count: number;
     rate: number;
   };
-}
-
-type Categories = "electronics" |"jewelery" | "men's clothing" | "women's clothing";
+};
 
 type Props = {
-  products: Product[],
-  categories: Categories[]
-}
+  products: Product[];
+  categories: Categories[];
+  productsGroupedByCategory: GroupedProducts;
+};
 
-
-export default function Home({ products, categories }: Props) {
-  console.log(categories);
+export default function Home({ products, categories, productsGroupedByCategory }: Props) {
   return (
     <>
       <Head>
@@ -38,49 +45,126 @@ export default function Home({ products, categories }: Props) {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <main>
-        <TopBar />
+      <TopBar />
+      <Box marginBottom="2rem">
         <Header />
+      </Box>
+      <main>
+        <Container>
+          <HomeHeroCategories categories={categories}></HomeHeroCategories>
+          <AdvantageSection />
+        </Container>
 
-        <Grid templateColumns="540px 255px 255px" gap="1rem" templateRows="200px 260px">
-          {categories.map((cat, key) => {
-            const slug = slugify(cat);
-            const imageUrl = `/pic-categories-${slug}.jpg`
-
-            if (key === 0) {
-              return <GridItem position="relative" w="100%" h="100%" bg="red.500" rowSpan={2} key={key}><Image src={imageUrl} fill={true} alt={cat} /></GridItem>
-            }
-
-            if (key === categories.length - 1) {
-              return <GridItem position="relative" w="100%" h="100%" bg="gray.500" colSpan={2} key={key}><Image src={imageUrl} fill={true} alt={cat} /></GridItem>
-            }
-
-            return <GridItem position="relative" w="100%" h="100%" bg="blue.500" key={key}><Image src={imageUrl} fill={true} alt={cat} /></GridItem>
+        <Container
+          maxW={{
+            base: '100%',
+            md: '1110px',
+          }}
+          paddingX="0"
+        >
+          {Object.entries(productsGroupedByCategory).map(([category, products]) => {
+            return (
+              <Box key={category} marginBottom="4rem">
+                <Heading
+                  as="h2"
+                  size="md"
+                  textTransform="uppercase"
+                  margin={{
+                    base: '0 0 1rem 1rem',
+                    md: '0 0 1.5rem',
+                  }}
+                >
+                  {category}
+                </Heading>
+                <HomeProductsGrid products={products} />
+              </Box>
+            );
           })}
-        </Grid>
+        </Container>
 
-        {/* <ol>
-          {products.map(product => {
-            return <li key={product.id}><strong>{product.title}</strong></li>
-          })}
-        </ol> */}
+        <Container>
+          <SimpleGrid
+            minChildWidth="320px"
+            spacing={{
+              base: '1rem',
+              md: '2rem',
+            }}
+          >
+            <PromoBanner image={bannerNewSeason}>
+              <Text fontSize="sm" color="gray.500">
+                New Season
+              </Text>
+              <Text fontSize="lg" fontWeight="bold" whiteSpace="nowrap">
+                lookbook collection
+              </Text>
+            </PromoBanner>
+            <PromoBanner image={bannerSale}>
+              <Text fontSize="sm" color="gray.500">
+                Sale
+              </Text>
+              <Text fontSize="lg" fontWeight="bold" whiteSpace="nowrap">
+                Get UP to{' '}
+                <Text as="span" color="red">
+                  50% off
+                </Text>
+              </Text>
+            </PromoBanner>
+          </SimpleGrid>
+        </Container>
+
+        <Container
+          background={'linear-gradient(180deg, #F3F2F2 0%, #DCDBDB 100%);'}
+          m="2rem auto"
+          p="1.5rem"
+          maxW="100%"
+        >
+          <Box maxW="33rem" m="auto" as="article" bgColor="white" p="2rem">
+            <Grid gap="2rem" maxW="22rem" m="auto" textAlign="center">
+              <header>
+                <Heading size="sm" textTransform="uppercase" color="gray">
+                  Special Offer
+                </Heading>
+                <Heading size="xl" textTransform="uppercase">
+                  Subscribe And{' '}
+                  <Text as="span" color="red">
+                    Get 10% Off
+                  </Text>
+                </Heading>
+              </header>
+              <Grid as="form" action="" gap="1.5rem">
+                <FormControl>
+                  <Input
+                    height="4rem"
+                    textAlign="inherit"
+                    borderRadius="0"
+                    type="email"
+                    placeholder="Enter your email"
+                    backgroundColor="gray.100"
+                  />
+                </FormControl>
+                <Button bgColor="black" w="100%" h="4rem" size={'lg'}>
+                  Subscribe
+                </Button>
+              </Grid>
+            </Grid>
+          </Box>
+        </Container>
       </main>
     </>
-  )
+  );
 }
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
-  const products = await fetch("https://fakestoreapi.com/products")
-    .then(res => res.json())
-  const categories = await fetch("https://fakestoreapi.com/products/categories")
-    .then(res => res.json())
+  const products = await fetch('https://fakestoreapi.com/products').then((res) => res.json());
+  const categories = await fetch('https://fakestoreapi.com/products/categories').then((res) => res.json());
 
-  console.log(categories);
+  const productsGroupedByCategory = groupProductsByCategory(products);
 
   return {
     props: {
       products,
-      categories
-    }
-  }
+      categories,
+      productsGroupedByCategory,
+    },
+  };
 }
