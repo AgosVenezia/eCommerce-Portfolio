@@ -1,21 +1,24 @@
 import { GetServerSidePropsContext } from 'next';
 import Head from 'next/head';
 
-import { Header } from '@/components/Header';
-import { TopBar } from '@/components/TopBar';
-
 import { HomeHeroCategories } from '@/components/HomeHeroCategories';
 import { Categories } from '@/models/Categories';
 
-import { Box, Button, Container, FormControl, Grid, Heading, Input, SimpleGrid, Text } from '@chakra-ui/react';
+import { Box, Container, Heading, SimpleGrid, Text } from '@chakra-ui/react';
 import { AdvantageSection } from '@/components/AdvantageSection';
 import { GroupedProducts, groupProductsByCategory } from '@/utils/groupProductsByCategory';
-import { HomeProductsGrid } from '@/components/HomeProductsGrid';
+import { ProductsGrid } from '@/components/ProductsGrid';
+
+import { PromoBanner } from '@/components/PromoBanner';
 
 import bannerNewSeason from '/public/banner-new-season.jpg';
 import bannerSale from '/public/banner-sale.jpg';
-import { CenteredLabel } from '@/components/CenteredLabel';
-import { PromoBanner } from '@/components/PromoBanner';
+import blogPic1 from '/public/blog-pic-01.jpg';
+import blogPic2 from '/public/blog-pic-02.jpg';
+import blogPic3 from '/public/blog-pic-03.jpg';
+
+import { SubscribeSection } from '@/components/SubscribeSection';
+import { BlogPostCard } from '@/components/BlogPostCard';
 
 export type Product = {
   id: number;
@@ -31,12 +34,11 @@ export type Product = {
 };
 
 type Props = {
-  products: Product[];
   categories: Categories[];
   productsGroupedByCategory: GroupedProducts;
 };
 
-export default function Home({ products, categories, productsGroupedByCategory }: Props) {
+export default function Home({ categories, productsGroupedByCategory }: Props) {
   return (
     <>
       <Head>
@@ -45,11 +47,8 @@ export default function Home({ products, categories, productsGroupedByCategory }
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <TopBar />
-      <Box marginBottom="2rem">
-        <Header />
-      </Box>
-      <main>
+
+      <Box as="main" mt="2rem">
         <Container>
           <HomeHeroCategories categories={categories}></HomeHeroCategories>
           <AdvantageSection />
@@ -76,7 +75,7 @@ export default function Home({ products, categories, productsGroupedByCategory }
                 >
                   {category}
                 </Heading>
-                <HomeProductsGrid products={products} />
+                <ProductsGrid products={products} />
               </Box>
             );
           })}
@@ -113,43 +112,44 @@ export default function Home({ products, categories, productsGroupedByCategory }
         </Container>
 
         <Container
-          background={'linear-gradient(180deg, #F3F2F2 0%, #DCDBDB 100%);'}
-          m="2rem auto"
-          p="1.5rem"
+          p="0"
           maxW="100%"
+          m={{
+            base: '14.75rem 0 4rem',
+            md: '2rem auto 6rem',
+          }}
         >
-          <Box maxW="33rem" m="auto" as="article" bgColor="white" p="2rem">
-            <Grid gap="2rem" maxW="22rem" m="auto" textAlign="center">
-              <header>
-                <Heading size="sm" textTransform="uppercase" color="gray">
-                  Special Offer
-                </Heading>
-                <Heading size="xl" textTransform="uppercase">
-                  Subscribe And{' '}
-                  <Text as="span" color="red">
-                    Get 10% Off
-                  </Text>
-                </Heading>
-              </header>
-              <Grid as="form" action="" gap="1.5rem">
-                <FormControl>
-                  <Input
-                    height="4rem"
-                    textAlign="inherit"
-                    borderRadius="0"
-                    type="email"
-                    placeholder="Enter your email"
-                    backgroundColor="gray.100"
-                  />
-                </FormControl>
-                <Button bgColor="black" w="100%" h="4rem" size={'lg'}>
-                  Subscribe
-                </Button>
-              </Grid>
-            </Grid>
-          </Box>
+          <SubscribeSection />
         </Container>
-      </main>
+
+        <Container>
+          <Heading as="h2" fontSize="2xl" textTransform="uppercase" mb={{ base: '2rem', md: '3rem' }}>
+            Latest From Blogpost
+          </Heading>
+          <SimpleGrid minChildWidth="300px" spacing={{
+            base: '2.5rem',
+            md: '1.5rem',
+          }}>
+            <BlogPostCard
+              image={blogPic1}
+              title="The Easiest Way to Break"
+              summary="But I must explain to you how all this mistaken idea of denouncing pleas and praising pain was bor"
+            />
+
+            <BlogPostCard
+              image={blogPic2}
+              title="Wedding Season"
+              summary="But I must explain to you how all this mistaken idea of denouncing pleas and praising pain was bor"
+            />
+
+            <BlogPostCard
+              image={blogPic3}
+              title="Recent Favorites On Repeat"
+              summary="But I must explain to you how all this mistaken idea of denouncing pleas and praising pain was bor"
+            />
+          </SimpleGrid>
+        </Container>
+      </Box>
     </>
   );
 }
@@ -162,7 +162,6 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
 
   return {
     props: {
-      products,
       categories,
       productsGroupedByCategory,
     },
