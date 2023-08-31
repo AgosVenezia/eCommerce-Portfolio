@@ -29,12 +29,19 @@ export default function Category({ products, category }: Props) {
   function onFilterSelected(e: ChangeEvent<HTMLSelectElement>) {
     const [min, max] = e.target.value.split('-');
 
-    const filtered = products.filter((p) => p.price >= parseFloat(min) && p.price <= parseFloat(max));
+    if (min || max) {
+      const filtered = products.filter((p) => p.price >= parseFloat(min) && p.price <= parseFloat(max));
 
-    setFilteredProducts({
-      products: filtered,
-      filtered: 'IDLE',
-    });
+      setFilteredProducts({
+        products: filtered,
+        filtered: 'FILTERED',
+      });
+    } else {
+      setFilteredProducts({
+        products: [],
+        filtered: 'IDLE',
+      });
+    }
   }
 
   const emptyFilter = filteredProducts.filtered === 'FILTERED' && !filteredProducts.products.length;
